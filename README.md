@@ -1,8 +1,11 @@
 # How to use:
-1. Download the [Lua `.dll` files](https://sourceforge.net/projects/luabinaries/files/5.1.5/Tools%20Executables/lua-5.1.5_Win64_bin.zip/download) and extract them in the same directory as your DeSmuMe executable.
+1. Extract the bundled `lua-5.1.5_Win64_bin.zip` file in the same directory as your DeSmuMe executable.
 2. Once your ROM is loaded, click `Tools` -> `Lua Scripting` -> `New Lua Script Window...`.
 3. `Browse...` for the included `PK_Script.lua` file.
 4. Run `PK_Script.exe`.
+
+# For more help:
+https://www.youtube.com/watch?v=ErHm6BNSNd8
 
 # Available commands:
 ```
