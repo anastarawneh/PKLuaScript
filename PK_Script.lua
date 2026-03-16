@@ -208,6 +208,38 @@ function showAbilities()
         paste = paste.."\n"
     end
 
+    for box = 1, 14 do
+        for slot = 1, 30 do
+            local decrypted, pid = decrypt_box_pokemon(box, slot)
+            local shuffle_key = bit.rshift(bit.band(pid, 0x3E000), 0xD) % 24 + 1
+            local blockA = shuffle[shuffle_key][1]
+            local blockB = shuffle[shuffle_key][2]
+            local blockC = shuffle[shuffle_key][3]
+            local blockD = shuffle[shuffle_key][4]
+            local species = species_names[decrypted[blockA + 0x0]]
+            local ability = ability_names[bit.rshift(decrypted[blockA + 0xC], 8)]
+            local ivData = decrypted[blockB + 0x12] * 0x10000 + decrypted[blockB + 0x10]
+            local index = pid % 2 + 1;
+
+            if pid > 0 then
+                local hasNickname = bit.rshift(ivData, 31) == 1
+                if hasNickname then
+                    local nickname = ""
+                    for i = 0x0, 0x16, 2 do
+                        if decrypted[blockC + i] == 0xFFFF then
+                            break
+                        end
+                        nickname = nickname..decode[decrypted[blockC + i]]
+                    end
+                    paste = paste..nickname.." ("..species..")"..": "..ability.." ["..index.."]"
+                else
+                    paste = paste..species..": "..ability.." ["..index.."]"
+                end
+                paste = paste.."\n"
+            end
+        end
+    end
+
     return paste
 end
 
