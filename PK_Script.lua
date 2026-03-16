@@ -335,7 +335,12 @@ end
 function decrypt_party_pokemon(slot)
     local mon_offset = party_offset + party_mon_size * (slot - 1)
     local decrypted = try_decrypt_pokemon(mon_offset)
+    local attempts = 0
     while decrypted == nil do
+        if attempts > 3 then
+            error("Pokémon decryption failed, please try again.")
+        end
+        attempts = attempts + 1
         emu.frameadvance()
         decrypted = try_decrypt_pokemon(mon_offset, false)
     end
@@ -350,7 +355,12 @@ function decrypt_box_pokemon(box, slot)
        return {}, 0
     end
     local decrypted = try_decrypt_pokemon(mon_offset, true)
+    local attempts = 0
     while decrypted == nil do
+        if attempts > 3 then
+            error("Pokémon decryption failed, please try again.")
+        end
+        attempts = attempts + 1
         emu.frameadvance()
         decrypted = try_decrypt_pokemon(mon_offset, true)
     end
@@ -367,71 +377,82 @@ end
 
 local status = ""
 
-if Command == "sleep" then
-    local slot = Args[1]
-    status = setStatus(slot, 1)
-elseif Command == "poison" then
-    local slot = Args[1]
-    status = setStatus(slot, 8)
-elseif Command == "burn" then
-    local slot = Args[1]
-    status = setStatus(slot, 16)
-elseif Command == "freeze" then
-    local slot = Args[1]
-    status = setStatus(slot, 32)
-elseif Command == "paralyze" then
-    local slot = Args[1]
-    status = setStatus(slot, 64)
-elseif Command == "bedtime" then
-    for slot = 1, party_size, 1 do
+function read_command()
+    if Command == "sleep" then
+        local slot = Args[1]
         status = setStatus(slot, 1)
-        if status:find(";error") then
-            break
+    elseif Command == "poison" then
+        local slot = Args[1]
+        status = setStatus(slot, 8)
+    elseif Command == "burn" then
+        local slot = Args[1]
+        status = setStatus(slot, 16)
+    elseif Command == "freeze" then
+        local slot = Args[1]
+        status = setStatus(slot, 32)
+    elseif Command == "paralyze" then
+        local slot = Args[1]
+        status = setStatus(slot, 64)
+    elseif Command == "bedtime" then
+        for slot = 1, party_size, 1 do
+            status = setStatus(slot, 1)
+            if status:find(";error") then
+                break
+            end
         end
-    end
-elseif Command == "sethp" then
-    local slot = Args[1]
-    local health = Args[2]
-    status = setHealth(slot, health)
-elseif Command == "export" then
-    status = ";export;"..export()
-elseif Command == "showabilities" then
-    status = ";showabilities;"..showAbilities()
-elseif Command == "edge" then
-    local slot = Args[1]
-    local amount = Args[2]
-    status = edge(slot, amount)
-elseif Command == "edgeparty" then
-    for slot = 1, party_size, 1 do
-        status = edge(slot, 1)
-        if status:find(";error") then
-            break
+    elseif Command == "sethp" then
+        local slot = Args[1]
+        local health = Args[2]
+        status = setHealth(slot, health)
+    elseif Command == "export" then
+        status = ";export;"..export()
+    elseif Command == "showabilities" then
+        status = ";showabilities;"..showAbilities()
+    elseif Command == "edge" then
+        local slot = Args[1]
+        local amount = Args[2]
+        status = edge(slot, amount)
+    elseif Command == "edgeparty" then
+        for slot = 1, party_size, 1 do
+            status = edge(slot, 1)
+            if status:find(";error") then
+                break
+            end
         end
-    end
-elseif Command == "heal" then
-    local slot = Args[1]
-    status = setStatus(slot, 0)
-    if not status:find(";error") then
-        status = setHealth(slot, -100)
-    end
-    if not status:find(";error") then
-        status = resetPP(slot)
-    end
-elseif Command == "nursejoy" then
-    for slot = 1, party_size, 1 do
+    elseif Command == "heal" then
+        local slot = Args[1]
         status = setStatus(slot, 0)
-        if status:find(";error") then
-            break
+        if not status:find(";error") then
+            status = setHealth(slot, -100)
         end
-        status = setHealth(slot, -100)
-        if status:find(";error") then
-            break
+        if not status:find(";error") then
+            status = resetPP(slot)
         end
-        status = resetPP(slot)
+    elseif Command == "nursejoy" then
+        for slot = 1, party_size, 1 do
+            status = setStatus(slot, 0)
+            if status:find(";error") then
+                break
+            end
+            status = setHealth(slot, -100)
+            if status:find(";error") then
+                break
+            end
+            status = resetPP(slot)
+        end
+    elseif Command == "" then
+        print("Ready to receive command.")
+        print("(\"script stopped\" is normal, commands go into the other terminal)")
     end
-elseif Command == "" then
-    print("Ready to receive command.")
-    print("(\"script stopped\" is normal, commands go into the other terminal)")
+end
+
+local state, error = pcall(read_command)
+if not state then
+    if error:find("script terminated") then
+        error = "Command failed, please try again."
+    else
+        status = ";error;An error has occured: "..error
+    end
 end
 
 if status ~= "" then
