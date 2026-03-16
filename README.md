@@ -1,3 +1,15 @@
+# Pokémon Platinum Kaizo Lua Script
+
+This is the official Lua script, to be used with the [Pokémon Platinum Kaizo Damage Calculator](https://pkcalc.anastarawneh.com).
+
+**It's Windows exclusive, sorry Mac users!**
+
+## Features:
+- Automatically import your Pokémon into the calculator (Use the `Sync` button once both scripts are running!)
+- Pre-status, pre-damage, and experience edging
+- Export your Pokémon in a Showdown format
+- Check the ability slots of your Pokémon, for those which have abilities added on evolution
+
 # How to use:
 1. Extract the bundled `lua-5.1.5_Win64_bin.zip` file in the same directory as your DeSmuMe executable.
 2. Once your ROM is loaded, click `Tools` -> `Lua Scripting` -> `New Lua Script Window...`.
