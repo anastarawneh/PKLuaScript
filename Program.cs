@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using TextCopy;
 
-string version = "1.0";
+string version = "1.1";
 int port = 31125;
 
 static void Message(string msg)
