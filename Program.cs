@@ -102,6 +102,9 @@ async void SetupServer()
                     SendError(export.Split(";")[2], 500);
                 }
                 break;
+            case "/version":
+                SendMessage(version);
+                break;
             default:
                 SendMessage($"Platinum Kaizo Lua Script - Version {version}");
                 break;
