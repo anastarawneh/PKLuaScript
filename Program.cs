@@ -127,14 +127,8 @@ Message("  burn(slot)           -- Pre-burns the chosen slot.");
 Message("  paralyze(slot)       -- Pre-paralyzes the chosen slot.");
 Message("  freeze(slot)         -- Pre-freezes the chosen slot.");
 Message("  bedtime()            -- Pre-sleeps the entire party.");
-Message("  sethp(slot,hp)       -- Sets the HP of the chosen slot.");
 Message("  export()             -- Exports a Showdown paste of your party and boxes to the clipboard.");
 Message("  showabilities()      -- Displays the ability slots.");
-Message("  edge(slot)           -- Edges the chosen slot by 1 HP.");
-Message("  edge(slot, amount)   -- Edges the chosen slot by the specified HP.");
-Message("  edgeparty()          -- Edges the entire party by 1 HP.");
-Message("  heal(slot)           -- Restores the chosen slot's HP, PP and status.");
-Message("  nursejoy()           -- Restores the entire party's HP, PP and status.");
 Console.WriteLine();
 
 if (File.Exists("temp.txt")) File.Delete("temp.txt");
@@ -244,37 +238,6 @@ while (true)
                 }
                 break;
             case "showabilities":
-                if (argList.Count != 0 && !(argList.Count == 1 && argList[0] == ""))
-                {
-                    Error("Invalid arguments.");
-                    continue;
-                }
-                break;
-            case "edge":
-                int amount = 1;
-                if (argList.Count < 1 || argList.Count > 2 || !int.TryParse(argList[0], out slot) || (argList.Count == 2 && !int.TryParse(argList[1], out amount)))
-                {
-                    Error("Invalid arguments.");
-                    continue;
-                }
-                arguments = $"{slot}, {amount}";
-                break;
-            case "edgeparty":
-                if (argList.Count != 0 && !(argList.Count == 1 && argList[0] == ""))
-                {
-                    Error("Invalid arguments.");
-                    continue;
-                }
-                break;
-            case "heal":
-                if (argList.Count != 1 || !int.TryParse(argList[0], out slot))
-                {
-                    Error("Invalid arguments.");
-                    continue;
-                }
-                arguments = $"{slot}";
-                break;
-            case "nursejoy":
                 if (argList.Count != 0 && !(argList.Count == 1 && argList[0] == ""))
                 {
                     Error("Invalid arguments.");
