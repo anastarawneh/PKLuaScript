@@ -31,6 +31,8 @@ local move_pp = {35, 25, 10, 15, 20, 20, 15, 15, 15, 35, 30, 8, 10, 30, 30, 35, 
 local formes = {[201]={"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""}, [386]={"-Attack", "-Defense", "-Speed"}, [412]={"-Sandy", "-Trash"}, [413]={"-Sandy", "-Trash"}, [414]={"", ""}, [422]={""}, [423]={""}, [479]={"-Heat", "-Wash", "-Frost", "-Fan", "-Mow"}, [487]={"-Origin"}, [492]={"-Sky"}}
 local decode = {[0x0121]="0", [0x0122]="1", [0x0123]="2", [0x0124]="3", [0x0125]="4", [0x0126]="5", [0x0127]="6", [0x0128]="7", [0x0129]="8", [0x012A]="9", [0x012B]="A", [0x012C]="B", [0x012D]="C", [0x012E]="D", [0x012F]="E", [0x0130]="F", [0x0131]="G", [0x0132]="H", [0x0133]="I", [0x0134]="J", [0x0135]="K", [0x0136]="L", [0x0137]="M", [0x0138]="N", [0x0139]="O", [0x013A]="P", [0x013B]="Q", [0x013C]="R", [0x013D]="S", [0x013E]="T", [0x013F]="U", [0x0140]="V", [0x0141]="W", [0x0142]="X", [0x0143]="Y", [0x0144]="Z", [0x0145]="a", [0x0146]="b", [0x0147]="c", [0x0148]="d", [0x0149]="e", [0x014A]="f", [0x014B]="g", [0x014C]="h", [0x014D]="i", [0x014E]="j", [0x014F]="k", [0x0150]="l", [0x0151]="m", [0x0152]="n", [0x0153]="o", [0x0154]="p", [0x0155]="q", [0x0156]="r", [0x0157]="s", [0x0158]="t", [0x0159]="u", [0x015A]="v", [0x015B]="w", [0x015C]="x", [0x015D]="y", [0x015E]="z", [0x015F]="À", [0x0160]="Á", [0x0161]="Â", [0x0162]="Ã", [0x0163]="Ä", [0x0164]="Å", [0x0165]="Æ", [0x0166]="Ç", [0x0167]="È", [0x0168]="É", [0x0169]="Ê", [0x016A]="Ë", [0x016B]="Ì", [0x016C]="Í", [0x016D]="Î", [0x016E]="Ï", [0x016F]="Ð", [0x0170]="Ñ", [0x0171]="Ò", [0x0172]="Ó", [0x0173]="Ô", [0x0174]="Õ", [0x0175]="Ö", [0x0176]="×", [0x0177]="Ø", [0x0178]="Ù", [0x0179]="Ú", [0x017A]="Û", [0x017B]="Ü", [0x017C]="Ý", [0x017D]="Þ", [0x017E]="ß", [0x017F]="à", [0x0180]="á", [0x0181]="â", [0x0182]="ã", [0x0183]="ä", [0x0184]="å", [0x0185]="æ", [0x0186]="ç", [0x0187]="è", [0x0188]="é", [0x0189]="ê", [0x018A]="ë", [0x018B]="ì", [0x018C]="í", [0x018D]="î", [0x018E]="ï", [0x018F]="ð", [0x0190]="ñ", [0x0191]="ò", [0x0192]="ó", [0x0193]="ô", [0x0194]="õ", [0x0195]="ö", [0x0196]="÷", [0x0197]="ø", [0x0198]="ù", [0x0199]="ú", [0x019A]="û", [0x019B]="ü", [0x019C]="ý", [0x019D]="þ", [0x019E]="ÿ", [0x019F]="Œ", [0x01A0]="œ", [0x01A1]="Ş", [0x01A2]="ş", [0x01A3]="ª", [0x01A4]="º", [0x01A5]="er", [0x01A6]="re", [0x01A7]="r", [0x01A8]="Pokémon Dollar", [0x01A9]="¡", [0x01AA]="¿", [0x01AB]="!", [0x01AC]="?", [0x01AD]=",", [0x01AE]=".", [0x01AF]="…", [0x01B0]="･", [0x01B1]="/", [0x01B2]="‘", [0x01B3]="'", [0x01B4]="“", [0x01B5]="”", [0x01B6]="„", [0x01B7]="«", [0x01B8]="»", [0x01B9]="(", [0x01BA]=")", [0x01BB]="♂", [0x01BC]="♀", [0x01BD]="+", [0x01BE]="-", [0x01BF]="*", [0x01C0]="#", [0x01C1]="=", [0x01C2]="&", [0x01C3]="~", [0x01C4]=":", [0x01C5]=";", [0x01C6]="♠", [0x01C7]="♣", [0x01C8]="♥", [0x01C9]="♦", [0x01CA]="★", [0x01CB]="◎", [0x01CC]="○", [0x01CD]="□", [0x01CE]="△", [0x01CF]="◇", [0x01D0]="@", [0x01D1]="♪", [0x01D2]="%", [0x01D3]="☀", [0x01D4]="☁", [0x01D5]="☂", [0x01D6]="☃", [0x01D7]="😑︎", [0x01D8]="☺", [0x01D9]="☹", [0x01DA]="😠︎", [0x01DB]="⤴︎", [0x01DC]="⤵︎", [0x01DD]="💤︎", [0x01DE]=" "}
 
+local queue = {}
+
 function getLevel(experience, species_id)
     local curve = curves[species_id] + 1
     local level = 0
@@ -55,8 +57,16 @@ function setStatus(slot, status)
     local key = bit.rshift(seed, 16)
     local old_status = bit.bxor(memory.readword(mon_offset + 0x88), key)
     local new_status = bit.bxor(status, key)
-    if old_status > 128 then
-        new_status = status
+    if old_status ~= 0 and
+        old_status ~= 1 and
+        old_status ~= 2 and
+        old_status ~= 3 and
+        old_status ~= 8 and
+        old_status ~= 16 and
+        old_status ~= 32 and
+        old_status ~= 64 and
+        old_status ~= 128 then
+        return false
     end
     memory.writeword(mon_offset + 0x88, new_status)
     return ";"..Command
@@ -305,25 +315,22 @@ local status = ""
 function read_command()
     if Command == "sleep" then
         local slot = Args[1]
-        status = setStatus(slot, 1)
+        table.insert(queue, {slot, 1})
     elseif Command == "poison" then
         local slot = Args[1]
-        status = setStatus(slot, 8)
+        table.insert(queue, {slot, 8})
     elseif Command == "burn" then
         local slot = Args[1]
-        status = setStatus(slot, 16)
+        table.insert(queue, {slot, 16})
     elseif Command == "freeze" then
         local slot = Args[1]
-        status = setStatus(slot, 32)
+        table.insert(queue, {slot, 32})
     elseif Command == "paralyze" then
         local slot = Args[1]
-        status = setStatus(slot, 64)
+        table.insert(queue, {slot, 64})
     elseif Command == "bedtime" then
         for slot = 1, party_size, 1 do
-            status = setStatus(slot, 1)
-            if status:find(";error") then
-                break
-            end
+            table.insert(queue, {slot, 1})
         end
     elseif Command == "export" then
         local ok, paste = pcall(export)
@@ -348,8 +355,38 @@ if not state then
     end
 end
 
-if status ~= "" then
-    local file = io.open("temp.txt", "w")
-    file:write(status)
-    io.close(file)
-end
+local attempts = 0
+gui.register(function ()
+    for i=#queue, 1, -1 do
+        slot = queue[i][1]
+        status = queue[i][2]
+        local mon_offset = party_offset + party_mon_size * (slot - 1)
+        local decrypted = decrypt_party_pokemon(slot)
+        local checksum = 0
+        for i = 0x8, 0x86, 2 do 
+            checksum = checksum + decrypted[i]
+            checksum = bit.band(checksum, 0xFFFF)
+        end
+        local checksumPassed = memory.readword(mon_offset + 0x6) == checksum
+        if checksumPassed then
+            local result = setStatus(slot, status)
+            if result then
+                status = result
+                table.remove(queue, i)
+            end
+        end
+    end
+    attempts = attempts + 1
+    if attempts == 20 then
+        queue = {}
+        status = ";error;Command could not be fully executed."
+    end
+    if #queue == 0 then
+        if status ~= "" then
+            local file = io.open("temp.txt", "w")
+            file:write(status)
+            io.close(file)
+        end
+        gui.register(nil)
+    end
+end)
