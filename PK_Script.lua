@@ -1,5 +1,5 @@
 -- DO NOT EDIT THE FIRST FIVE LINES, INCLUDING THE COMMENTS!
-Version = "1.1"
+Version = "1.2"
 Command = ""
 Args = {}
 -- YOU MAY EDIT ANYTHING ELSE :D
