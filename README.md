@@ -6,7 +6,7 @@ This is the official Lua script, to be used with the [Pokémon Platinum Kaizo Da
 
 ## Features:
 - Automatically import your Pokémon into the calculator (Use the `Sync` button once both scripts are running!)
-- Pre-status, pre-damage, and experience edging
+- Pre-status your Pokémon with a simple command
 - Export your Pokémon in a Showdown format
 - Check the ability slots of your Pokémon, for those which have abilities added on evolution
 
