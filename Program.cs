@@ -5,6 +5,15 @@ using TextCopy;
 
 string version = "1.3.1";
 int port = 31125;
+bool debug = args.Contains("--debug");
+
+void Debug(string msg)
+{
+    if (!debug) return;
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine(msg);
+    Console.ResetColor();
+}
 
 static void Message(string msg)
 {
@@ -51,7 +60,10 @@ async void SendMessage(string data)
                     + $"Content-Length: {data.Length}\r\n"
                     + "Content-Type: text/plain; charset=utf-8\r\n"
                     + $"\r\n{data}";
+    Debug("Sending HTTP response");
+    Debug(response);
     await client.SendAsync(Encoding.UTF8.GetBytes(response));
+    Debug("Sent HTTP response");
 }
 
 async void SendError(string data, int code)
@@ -67,7 +79,10 @@ async void SendError(string data, int code)
                     + $"Content-Length: {data.Length}\r\n"
                     + "Content-Type: text/plain; charset=utf-8\r\n"
                     + $"\r\n{data}";
+    Debug("Sending HTTP response");
+    Debug(response);
     await client.SendAsync(Encoding.UTF8.GetBytes(response));
+    Debug("Sent HTTP response");
 }
 
 async void SetupServer()
@@ -75,24 +90,35 @@ async void SetupServer()
     Socket socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     socket.Bind(new IPEndPoint(IPAddress.Any, port));
 
+    Debug("Starting server");
     socket.Listen();
+    Debug("Started server");
 
     while (true) {
-        byte[] responseBytes = new byte[256];
-        char[] responseChars = new char[256];
+        byte[] responseBytes = new byte[1024];
+        char[] responseChars = new char[1024];
         client = await socket.AcceptAsync();
+        Debug("Accepted client");
         int received = await client.ReceiveAsync(responseBytes);
+        Debug("Received HTTP request");
         Encoding.UTF8.GetChars(responseBytes, 0, received, responseChars, 0);
+        Debug("Decoded request:");
+        Debug(new string(responseChars));
         string head = new string(responseChars).Split("\r\n\r\n")[0];
+        Debug("Head -> " + head);
         string method = head.Split("\r\n")[0].Split(" ")[0];
+        Debug("Method -> " + method);
         string path = head.Split("\r\n")[0].Split(" ")[1];
+        Debug("Path -> " + path);
         if (method == "GET") switch (path)
         {
             case "/ping":
                 SendMessage("Pong!");
+                Debug("Returned ping");
                 break;
             case "/update":
                 string export = SendCommand("export", "");
+                Debug("Executed command: export");
                 if (export.Split(";")[1].Trim() == "export")
                 {
                     SendMessage(export.Split(";")[2]);
@@ -104,9 +130,11 @@ async void SetupServer()
                 break;
             case "/version":
                 SendMessage(version);
+                Debug("Returned version");
                 break;
             default:
                 SendMessage($"Platinum Kaizo Lua Script - Version {version}");
+                Debug("Returned blank message");
                 break;
         }
         else
@@ -115,6 +143,7 @@ async void SetupServer()
             continue;
         }
         client.Close();
+        Debug("Disconnected client");
     }
 }
 
