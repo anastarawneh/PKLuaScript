@@ -81,6 +81,9 @@ function exportPokemon(decrypted)
     local blockC = shuffle[shuffle_key][3]
     local blockD = shuffle[shuffle_key][4]
     local species_id = decrypted[blockA + 0x0]
+    if species_id == 0 then
+        return false
+    end
     local genderFormeByte = decrypted[blockB + 0x18]
     local species = species_names[species_id]
     local forme = bit.rshift(genderFormeByte, 3)
@@ -150,8 +153,11 @@ function exportPokemon(decrypted)
     return paste
 end
 
-function export()
+function export(sync)
     local paste = ""
+    if sync then
+        paste = "["
+    end
     for slot = 1, party_size do
         local decrypted = decrypt_party_pokemon(slot)
         local pid = decrypted[0x2] * 0x10000 + decrypted[0x0]
@@ -163,15 +169,27 @@ function export()
                 decrypted[i - mon_offset] = memory.readword(i)
             end
         end
-        paste = paste..exportPokemon(decrypted)
+        local data = exportPokemon(decrypted)
+        if sync then
+            data = tostring(memory.readbyterange(party_offset + party_mon_size * (slot - 1), 0x88)):gsub("{", "["):gsub("}", "], ")
+        end
+        paste = paste..data
     end
     for box = 1, 14 do
         for slot = 1, 30 do
-            local decrypted, pid = decrypt_box_pokemon(box, slot)
-            if pid > 0 then
-                paste = paste..exportPokemon(decrypted)
+            local decrypted = decrypt_box_pokemon(box, slot)
+            data = exportPokemon(decrypted)
+            if data then -- This returns false if the species ID is 0, since the personality value is very likely to be 0
+            --              because of Cute Charm, and so it can't be used to check PC slots
+                if sync then
+                    data = tostring(memory.readbyterange(pc_offset + (box_mon_size * (((box - 1) * 30) + slot - 1)), 0x88)):gsub("{", "["):gsub("}", "], ")
+                end
+                paste = paste..data
             end
         end
+    end
+    if sync then
+        paste = paste:sub(1, -3).."]"
     end
     -- TODO: Boxes 15-18 are death boxes, should be marked so they don't show up on the calc but still get imported for location marking
     return paste
@@ -334,11 +352,15 @@ function read_command()
         end
     elseif Command == "export" then
         local ok, paste = pcall(export)
-        if not ok then status = ";error;Try again later. Please report if this happens multiple times in a row."
+        if not ok then status = ";error;Try again later, or open the party menu and try again. If this error occurs on running the command in the party menu, please report it."
         else status = ";export;"..paste end
+    elseif Command == "sync" then
+        local ok, paste = pcall(export, true)
+        if not ok then status = ";error;Try again later, or open the party menu and try again. If this error occurs on running the command in the party menu, please report it."
+        else status = ";sync;"..paste end
     elseif Command == "showabilities" then
         local ok, paste = pcall(showAbilities)
-        if not ok then status = ";error;Try again later. Please report if this happens multiple times in a row."
+        if not ok then status = ";error;Try again later, or open the party menu and try again. If this error occurs on running the command in the party menu, please report it."
         else status = ";showabilities;"..paste end
     elseif Command == "" then
         print("Ready to receive command.")

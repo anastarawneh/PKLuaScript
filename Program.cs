@@ -116,10 +116,22 @@ async void SetupServer()
                 SendMessage("Pong!");
                 Debug("Returned ping");
                 break;
-            case "/update":
+            case "/paste":
                 string export = SendCommand("export", "");
                 Debug("Executed command: export");
                 if (export.Split(";")[1].Trim() == "export")
+                {
+                    SendMessage(export.Split(";")[2]);
+                }
+                else
+                {
+                    SendError(export.Split(";")[2], 500);
+                }
+                break;
+            case "/update":
+                export = SendCommand("sync", "");
+                Debug("Executed command: sync");
+                if (export.Split(";")[1].Trim() == "sync")
                 {
                     SendMessage(export.Split(";")[2]);
                 }
