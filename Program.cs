@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using TextCopy;
 
-string version = "1.3.2";
+string version = "1.4";
 int port = 31125;
 bool debug = args.Contains("--debug");
 
