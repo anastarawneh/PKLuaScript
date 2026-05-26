@@ -189,6 +189,7 @@ function export(sync)
         end
     end
     if sync then
+local dead = 0
         paste = paste:sub(1, -3).."], ["
         for box = 15, 18 do
             for slot = 1, 30 do
@@ -197,10 +198,14 @@ function export(sync)
                 if data then
                     data = tostring(memory.readbyterange(pc_offset + (box_mon_size * (((box - 1) * 30) + slot - 1)), 0x88)):gsub("{", "["):gsub("}", "], ")
                     paste = paste..data
+dead = dead + 1
                 end
             end
         end
-        paste = paste:sub(1, -3).."]]"
+if dead > 0 then
+        paste = paste:sub(1, -3)
+        end
+        paste = paste.."]]"
     end
     -- TODO: Boxes 15-18 are death boxes, should be marked so they don't show up on the calc but still get imported for location marking
     return paste
