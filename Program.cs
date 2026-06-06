@@ -94,7 +94,8 @@ async void SetupServer()
     socket.Listen();
     Debug("Started server");
 
-    while (true) {
+    while (true)
+    {
         byte[] responseBytes = new byte[1024];
         char[] responseChars = new char[1024];
         client = await socket.AcceptAsync();
@@ -104,6 +105,13 @@ async void SetupServer()
         Encoding.UTF8.GetChars(responseBytes, 0, received, responseChars, 0);
         Debug("Decoded request:");
         Debug(new string(responseChars));
+        if (new string(responseChars) == "")
+        {
+            Debug("Empty request, ignoring");
+            client.Close();
+            Debug("Disconnected client");
+            continue;
+        }
         string head = new string(responseChars).Split("\r\n\r\n")[0];
         Debug("Head -> " + head);
         string method = head.Split("\r\n")[0].Split(" ")[0];
