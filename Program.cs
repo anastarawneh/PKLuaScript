@@ -104,63 +104,63 @@ async void SetupServer()
         Debug("Received HTTP request");
         Encoding.UTF8.GetChars(responseBytes, 0, received, responseChars, 0);
         Debug("Decoded request:");
-        Debug(new string(responseChars));
-        if (new string(responseChars) == "")
+        Debug("'" + new string(responseChars) + "'");
+        try
         {
-            Debug("Empty request, ignoring");
-            client.Close();
-            Debug("Disconnected client");
-            continue;
+            string head = new string(responseChars).Split("\r\n\r\n")[0];
+            Debug("Head -> " + head);
+            string method = head.Split("\r\n")[0].Split(" ")[0];
+            Debug("Method -> " + method);
+            string path = head.Split("\r\n")[0].Split(" ")[1];
+            Debug("Path -> " + path);
+            if (method == "GET") switch (path)
+            {
+                case "/ping":
+                    SendMessage("Pong!");
+                    Debug("Returned ping");
+                    break;
+                case "/paste":
+                    string export = SendCommand("export", "");
+                    Debug("Executed command: export");
+                    if (export.Split(";")[1].Trim() == "export")
+                    {
+                        SendMessage(export.Split(";")[2]);
+                    }
+                    else
+                    {
+                        SendError(export.Split(";")[2], 500);
+                    }
+                    break;
+                case "/update":
+                    export = SendCommand("sync", "");
+                    Debug("Executed command: sync");
+                    if (export.Split(";")[1].Trim() == "sync")
+                    {
+                        SendMessage(export.Split(";")[2]);
+                    }
+                    else
+                    {
+                        SendError(export.Split(";")[2], 500);
+                    }
+                    break;
+                case "/version":
+                    SendMessage(version);
+                    Debug("Returned version");
+                    break;
+                default:
+                    SendMessage($"Platinum Kaizo Lua Script - Version {version}");
+                    Debug("Returned blank message");
+                    break;
+            }
+            else
+            {
+                SendError("Invalid method.", 405);
+                continue;
+            }
         }
-        string head = new string(responseChars).Split("\r\n\r\n")[0];
-        Debug("Head -> " + head);
-        string method = head.Split("\r\n")[0].Split(" ")[0];
-        Debug("Method -> " + method);
-        string path = head.Split("\r\n")[0].Split(" ")[1];
-        Debug("Path -> " + path);
-        if (method == "GET") switch (path)
+        catch
         {
-            case "/ping":
-                SendMessage("Pong!");
-                Debug("Returned ping");
-                break;
-            case "/paste":
-                string export = SendCommand("export", "");
-                Debug("Executed command: export");
-                if (export.Split(";")[1].Trim() == "export")
-                {
-                    SendMessage(export.Split(";")[2]);
-                }
-                else
-                {
-                    SendError(export.Split(";")[2], 500);
-                }
-                break;
-            case "/update":
-                export = SendCommand("sync", "");
-                Debug("Executed command: sync");
-                if (export.Split(";")[1].Trim() == "sync")
-                {
-                    SendMessage(export.Split(";")[2]);
-                }
-                else
-                {
-                    SendError(export.Split(";")[2], 500);
-                }
-                break;
-            case "/version":
-                SendMessage(version);
-                Debug("Returned version");
-                break;
-            default:
-                SendMessage($"Platinum Kaizo Lua Script - Version {version}");
-                Debug("Returned blank message");
-                break;
-        }
-        else
-        {
-            SendError("Invalid method.", 405);
-            continue;
+            Debug("Request processing failed. Ignoring.");
         }
         client.Close();
         Debug("Disconnected client");
